@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const port = 5500; // Use the PORT from Render, fallback to 5500 for local
+const port = process.env.PORT || 5500; // Use the PORT from Render, fallback to 5500 for local
 const dbConnection = require("./db/dbConfig");
 const cors = require("cors");
 
