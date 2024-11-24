@@ -1,16 +1,15 @@
-
 const dbConnection = require("../db/dbConfig");
 const express = require("express");
 const router = express.Router();
-const { v4: uuidv4 } = require('uuid');// Function to submit a question
+const { v4: uuidv4 } = require("uuid"); // Function to submit a question
 
 const submitQuestion = async (req, res) => {
   try {
     const { title, desc, userid } = req.body;
 
     // Generate a UUID for questionid
-    const questionid = uuidv4();  // Generates a unique UUID
- 
+    const questionid = uuidv4(); // Generates a unique UUID
+
     const newQuestion = await dbConnection.query(
       "INSERT INTO questions (title, description, questionid, userid) VALUES (?, ?, ?, ?)",
       [title, desc, questionid, userid]
@@ -23,10 +22,9 @@ const submitQuestion = async (req, res) => {
   }
 };
 const getAllQuestions = async (req, res) => {
- 
-  const sql = `SELECT users.userid, users.username, questions.title,questions.questionid, questions.description FROM users JOIN questions ON users.userid = questions.userid;`
-      const result =await dbConnection.query(sql)
-      res.json(result[0])
+  const sql = `SELECT users.userid, users.username, questions.title,questions.questionid, questions.description FROM users JOIN questions ON users.userid = questions.userid;`;
+  const result = await dbConnection.query(sql);
+  res.json(result[0]);
 };
 
 const getSingleQuestion = async (req, res) => {
@@ -41,7 +39,7 @@ const getSingleQuestion = async (req, res) => {
     `;
 
     const [result] = await dbConnection.query(sql, [questionid]);
-    
+
     if (result.length === 0) {
       return res.status(404).json({ message: "Question not found." });
     }

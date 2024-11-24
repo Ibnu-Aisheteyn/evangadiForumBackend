@@ -1,48 +1,42 @@
-// Load environment variables from .env file
 require("dotenv").config();
 const express = require("express");
 const app = express();
-
-const PORT = process.env.PORT || 5500; // Use Render's PORT or fallback to 5500 locally
-const dbConnection = require("./db/dbConfig"); // Database connection
+const port = process.env.PORT || 5500;
+const dbConnection = require("./db/dbConfig");
 const cors = require("cors");
-
 app.use(express.json());
 app.use(cors());
+// //Question routes middleware file
 
-// Test route to confirm server is running
 app.get("/", (req, res) => {
-  res.send("Welcome to the Evangadi Forum server!");
+  res.send("Welcome to Evangadi Forum!");
 });
 
-// Authentication middleware
+//auth middleware
 const authMiddleware = require("./middleWare/authMiddleWare");
-app.use("/api", authMiddleware); // Enable middleware for /api routes
+// app.use("/api", authMiddleware);
 
-// Answer routes
 const answerRoute = require("./routes/answerRoute");
-app.use("/api/answers", answerRoute);
+app.use("/api/answers", authMiddleware, answerRoute);
 
-// User routes
+//user routes middleware
 const userRoute = require("./routes/userRoute");
 app.use("/api/users", userRoute);
 
-// Question routes
-const questionRoute = require("./routes/questionRoute");
-app.use("/api/questions", questionRoute);
+// //Question routes middleware
 
-// Start the server and establish the database connection
+const questionRoute = require("./routes/questionRoute");
+
+app.use("/api/questions", authMiddleware, questionRoute);
+
 async function start() {
   try {
-    const result = await dbConnection.execute("select 'test' "); // Test DB connection
-    console.log("Database connection established");
-
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
+    const result = await dbConnection.execute("select 'test' ");
+    app.listen(port);
+    console.log("database connection established");
+    console.log(`listening on port http://localhost:${port}`);
   } catch (error) {
-    console.error("Database connection failed:", error.message);
+    console.log(error.message);
   }
 }
-
 start();
